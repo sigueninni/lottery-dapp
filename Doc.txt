@@ -1,0 +1,34 @@
+lottery-contracts : 
+- Scaffold-eth2 n'utilisant pas viem pour le moment, je teste les contracts avec un hardhat with viem
+-
+
+
+
+
+backend --> nest js:
+
+
+
+
+
+
+frontend --> Scaffold-eth2 :
+- pour pouvoir déployer sur vercel : enlever husky de package.json et changer  -> "postinstall": "",
+- aussi mm si pas besoin si on enléve husky, commenter ./husky/pre-commit --> #yarn lint-staged --verbose
+voir aussi -> https://scaffold-eth-2-docs.vercel.app/disable-type-linting-error-checks
+
+
+nouveau projet --> https://github.com/Encode-Club-Solidity-Bootcamp/Lesson-13
+corepack enable
+git clone https://github.com/scaffold-eth/scaffold-eth-2.git mon_projet
+cd mon_projet
+yarn install
+
+pour changer de HRE à sepolia --> ./packages/nextjs/scaffold.config.ts
+
+yarn start : démarre le serveur
+yarn chain : bkchaine locale
+yarn deploy : déploie les contrats dans packages/hardhat et met à dispo du font packages/nextjs
+
+pour utiliser de nouvelle version de solidty : changer dans packafes/hardhat  hardhat.config version: "0.8.20",
+pour utiliser nouvelles version de OZ :  packafes/hardhatpackage.json "@openzeppelin/contracts": "^5.0.2",
