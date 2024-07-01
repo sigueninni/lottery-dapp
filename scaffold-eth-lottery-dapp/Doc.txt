@@ -1,18 +1,130 @@
-lottery-contracts : 
-- Scaffold-eth2 n'utilisant pas viem pour le moment, je teste les contracts avec un hardhat with viem
--
+Prérequis:
+
+nvm install --lts
+nvm use --lts
+node -v
+v20.11.1
 
 
 
 
-backend --> nest js:
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+
+---> start hardhat project : https://github.com/Encode-Club-Solidity-Bootcamp/Lesson-05
+
+mkdir project
+cd project
+npm init
+npm install --save-dev hardhat
+# Complete the prompt with the default options (hit enter for every option)
+# These options can be changed later in the package.json file
+npx hardhat init
+    "Create a TypeScript project (with Viem)"
+# Pick all default options
+code .
+
+for test --> mocha
+->Create a file named exactly .mocharc.json 
+        {
+        "require": "hardhat/register",
+        "timeout": 40000,
+        "_": ["test*/**/*.ts"]
+        }
+
+npm install dotenv
+-> .env
+    MNEMONIC="here is where your extracted twelve words mnemonic phrase should be put"
+    PRIVATE_KEY="<your wallet private key should go here>"
+    POKT_API_KEY="********************************"
+    INFURA_API_KEY="********************************"
+    INFURA_API_SECRET="********************************"
+    ALCHEMY_API_KEY="********************************"
+    ETHERSCAN_API_KEY="********************************"
+
+
+npx hardhat compile 
+npx hardhat test 
+
+ 
+Connecting to a public blockchain https://github.com/Encode-Club-Solidity-Bootcamp/Lesson-08
 
 
 
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+
+lottery-contracts :  hardhat project
+- Scaffold-eth2 n'utilisant pas viem pour le moment, je teste les contracts avec un hardhat( voir comment setup u simple projet hardhat plus haut ) with viem
+-Ajouter .env
+-ajouter mocha
 
 
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
 
-frontend --> Scaffold-eth2 :
+backend --> nest js: https://docs.nestjs.com/  https://github.com/Encode-Club-Solidity-Bootcamp/Lesson-15
+
+npm i -g @nestjs/cli
+nest new project-name
+
+
+or  ts starter project
+$ git clone https://github.com/nestjs/typescript-starter.git project
+$ cd project
+$ npm install
+$ npm run start
+
+-Ajouter .env
+-ajouter mocha
+
+-- hadnling a smartcontract via ABI
+
+Fetching the ABI for creating a Contract with Ethers:
+    Pick your MyToken.json from any ERC20 that you compiled before
+    Copy it and paste at src/assets/
+Import the file at app.service.ts:
+    import * as tokenJson from './assets/MyToken.json';
+Add the resolveJsonModule configuration to compilerOptions inside tsconfig.json:
+    "resolveJsonModule": true
+
+
+-----------------------------------------------------------------------------------------------
+Adding Swagger Module
+npm install --save @nestjs/swagger
+Configure your main.ts file:
+            import { NestFactory } from '@nestjs/core';
+            import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+            import { AppModule } from './app.module';
+
+            async function bootstrap() {
+            const app = await NestFactory.create(AppModule);
+
+            const config = new DocumentBuilder()
+                .setTitle('API example')
+                .setDescription('The API description')
+                .setVersion('1.0')
+                .addTag('example')
+                .build();
+            const document = SwaggerModule.createDocument(app, config);
+            SwaggerModule.setup('api', app, document);
+
+            await app.listen(3000);
+            }
+            bootstrap();
+-----------------------------------------------------------------------------------------------
+
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+
+https://scaffold-eth-2-docs.vercel.app/
+
+frontend --> Scaffold-eth2 :  https://github.com/Encode-Club-Solidity-Bootcamp/Lesson-13
+
 - pour pouvoir déployer sur vercel : enlever husky de package.json et changer  -> "postinstall": "",
 - aussi mm si pas besoin si on enléve husky, commenter ./husky/pre-commit --> #yarn lint-staged --verbose
 voir aussi -> https://scaffold-eth-2-docs.vercel.app/disable-type-linting-error-checks
@@ -32,3 +144,48 @@ yarn deploy : déploie les contrats dans packages/hardhat et met à dispo du fon
 
 pour utiliser de nouvelle version de solidty : changer dans packafes/hardhat  hardhat.config version: "0.8.20",
 pour utiliser nouvelles version de OZ :  packafes/hardhatpackage.json "@openzeppelin/contracts": "^5.0.2",
+
+
+-Ajouter .env
+-ajouter mocha
+
+
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+
+Vercel 
+
+scaffold eth front --> enlever husky voir plus haut 
+    déployer en pointant sur packages/nextj
+    ajour env var 
+    NEXT_PUBLIC_IGNORE_BUILD_ERROR to true
+
+déployer nestjs backend api
+    ajouter un fichier vercel.json 
+            {
+            "version": 2,
+            "builds":[
+                {
+                    "src":"src/main.ts",
+                    "use":"@vercel/node"
+                }
+            ],
+            "routes":[
+                {
+                    "src":"/(.*)",
+                    "dest":"src/main.ts",
+                    "methods":[
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE"
+                    ]
+                }
+            ]
+
+        }
+
+ovveride output directory -> dist
+
+ajour NEXT_PUBLIC_IGNORE_BUILD_ERROR true
