@@ -107,7 +107,7 @@ export class AppService {
   }
 
 
-  async purchaseTokens(address: Address, amount: string) {
+  async buyTokens(address: Address, amount: string) {
     const response = await this.walletClient.writeContract({
       address: this.getContractAddress(),
       abi: abi,

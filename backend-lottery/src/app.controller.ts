@@ -21,9 +21,9 @@ export class AppController {
     return { result: await this.appService.closeLottery() }
   }
 
-  @Post('purchase-tokens')
+  @Post('buy-tokens')
   async buyTokens(@Body('address') address: Address, @Body('amount') amount: string) {
-    return { result: await this.appService.purchaseTokens(address, amount) }
+    return { result: await this.appService.buyTokens(address, amount) }
   }
 
   @Get("token-balance")
