@@ -3,6 +3,8 @@
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
+import { EtherInput } from "~~/components/scaffold-eth";
+import { Address } from "viem";
 
 const Home: NextPage = () => {
   return (
@@ -32,10 +34,89 @@ function PageBody() {
       <p className="text-center text-lg">Here we are!</p>
       <WalletInfo />
       <CheckLotteryState />
-
+      <OpenLottery />
+      <BuyToken />
+      <CloseLottery />
 
     </>
   );
+}
+
+
+function CloseLottery() {
+  const handleSubmit = () => {
+    fetch('http://localhost:3001/close-lottery', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("unable to post request")
+        }
+      })
+  }
+
+  return (
+    <div className="card w-96 bg-primary text-primary-content mt-4">
+      <div className="card-body">
+        <h1 className="card-title">Close Lottery?</h1>
+        <button className="btn bg-secondary" onClick={handleSubmit}>OK</button>
+
+      </div>
+
+    </div>
+  )
+}
+
+
+function BuyToken() {
+
+  const { address, isConnecting, isDisconnected, chain } = useAccount();
+
+  const [ethAmount, setEthAmount] = useState<string>("")
+  const [feedback, setFeedback] = useState<string>("")
+
+  const handleSubmit = () => {
+    const request = fetch(`http://localhost:3001/purchase-tokens`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+
+      body: JSON.stringify({
+        address: address,
+        amount: ethAmount
+      })
+    })
+      .then((res) => {
+        if (!res.ok) {
+          setFeedback("Oh no, something went wrong :(")
+          throw new Error("unable to make request")
+        }
+
+        return res.json()
+
+      })
+      .then((data) => {
+        setFeedback("You may now participate in the lottery!")
+      })
+  }
+
+  return (
+    <div className="card w-96 bg-primary text-primary-content mt-4">
+      <div className=" card-body">
+        <h1 className="card-title">Purchase Group5 Tokens</h1>
+        {feedback && <p>{feedback}</p>}
+        <EtherInput
+          value={ethAmount}
+          onChange={amount => setEthAmount(amount)}
+        />
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+    </div>
+  )
 }
 
 
@@ -65,6 +146,58 @@ function CheckLotteryState() {
   );
 }
 
+
+function OpenLottery() {
+
+  const [time, setTime] = useState<number>(0);
+  const [feedback, setFeedback] = useState<string>("");
+
+  const handleSubmit = () => {
+    fetch("http://localhost:3001/open-lottery", {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(
+        { time: time }
+      )
+    })
+      .then((res) => {
+        if (!res.ok) {
+          setFeedback("An error has occured.")
+          throw new Error("cannot post request")
+        }
+
+        return res.json();
+      })
+      .then((data) => {
+        setFeedback("Participants may now begin placing bets!")
+        setTime(0);
+      })
+  }
+
+  return (
+    <div className="card w-96 bg-primary text-primary-content mt-4">
+      <div className="card-body">
+        <h1 className="card-title">Open Lottery for Betting</h1>
+        {feedback && <p>{feedback}</p>}
+        <div>
+          <div>
+            <label className="label">
+              How long in seconds?
+              <input
+                type="number"
+                value={time}
+                onChange={(e) => setTime(e.target.valueAsNumber)}
+              />
+            </label>
+          </div>
+        </div>
+        <button className="btn bg-secondary" onClick={handleSubmit}>Open Lottery</button>
+      </div>
+    </div>
+  )
+}
 function RandomWord() {
   const [data, setData] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);
